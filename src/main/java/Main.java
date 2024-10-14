@@ -3,6 +3,7 @@ import java.io.OutputStream;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class Main {
   public static void main(String[] args){
@@ -30,16 +31,17 @@ public class Main {
        byte[] correlation_id = in.readNBytes(4); //INT32, 4 bytes
        byte[] client_id; // Nullable String
        byte[] tagged_fields; // TAGGED_FIELDS
-       // 
-       request_api_version[0] = 0;
-       request_api_version[1] = 2;
-
 
        // Output
        OutputStream out = clientSocket.getOutputStream();
        out.write(message_size);
        out.write(correlation_id);
        out.write(request_api_key);
+
+       short version = ByteBuffer.wrap(request_api_version).getShort();
+       if(version < 0 || version > 4){
+	       out.write(new byte[] {0, 35});
+       }
        out.write(request_api_version);
 
      } catch (IOException e) {
