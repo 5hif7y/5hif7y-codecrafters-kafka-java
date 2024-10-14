@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,9 +21,21 @@ public class Main {
        serverSocket.setReuseAddress(true);
        // Wait for connection from client.
        clientSocket = serverSocket.accept();
+
+       // Input
+       InputStream in = clientSocket.getInputStream();
+       byte[] message_size = in.readNBytes(4); // INT32, 4 bytes
+       byte[] request_api_key = in.readNBytes(2); // INT16, 2 bytes
+       byte[] request_api_version = in.readNBytes(2); // INT16, 2 bytes
+       byte[] correlation_id = in.readNBytes(4); //INT32, 4 bytes
+       byte[] client_id; // Nullable String
+       byte[] tagged_fields; // TAGGED_FIELDS
+
+       // Output
        OutputStream out = clientSocket.getOutputStream();
-       out.write(new byte[] {0, 0, 0, 01,   // message description, size 01
-       			     0, 0, 0, 7}); // message
+       out.write(message_size);
+       out.write(correlation_id);
+
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
      } finally {
