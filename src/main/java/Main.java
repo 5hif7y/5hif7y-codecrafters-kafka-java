@@ -52,6 +52,11 @@ public class Main {
 	       finalOutputBuffer.put(outputBuffer.array(), 0, response_size);
 	
 	       out.write(finalOutputBuffer.array());
+	       out.flush(); // not sure if this is neccesary
+	       // test if the client closed the connection to the server
+	       if(clientSocket.isClosed() || in.read() == -1){
+		       break;
+	       }
        }
 
      } catch (IOException e) {
