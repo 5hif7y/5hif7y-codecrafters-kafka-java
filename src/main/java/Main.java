@@ -85,7 +85,7 @@ public class Main {
 	  outputBuffer.putInt((int) 0);
 	  // TAGGED_FIELDS --- 1 byte --- now 0 'no tagged fields' --- not sure if MAX INT64
 	  //outputBuffer.put((byte) 0);
-	  outputBuffer.putInt((int) 0); // test if this is ok
+	  outputBuffer.putShort((short) 0); // test if this is ok
 	
   }
 }
