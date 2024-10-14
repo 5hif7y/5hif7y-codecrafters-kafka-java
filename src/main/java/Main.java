@@ -35,6 +35,8 @@ public class Main {
        OutputStream out = clientSocket.getOutputStream();
        out.write(message_size);
        out.write(correlation_id);
+       out.write(request_api_key);
+       out.write(request_api_version);
 
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
