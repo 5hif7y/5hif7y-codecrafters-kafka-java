@@ -64,7 +64,7 @@ public class Main {
   private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, byte[] client_id, byte[] tagged_fields){
 
 	  // Correlation ID --- INT32, 4 bytes, int
-	  outputBuffer.put(correlation_id);
+	  outputBuffer.putInt(ByteBuffer.wrap(correlation_id).getInt());
 	  // API_VERSION --- INT16, 2 bytes, short
 	  // Error code --- INT16, 2 bytes, short --- 0 means "No Error"
 	  short version = ByteBuffer.wrap(request_api_version).getShort();
@@ -73,17 +73,17 @@ public class Main {
 	  } else {
 		  outputBuffer.putShort((short)0);
 	  }
-	  // I have no idea what this is, spacing?
+	  // Response header --- 1 byte --- 2
 	  outputBuffer.put((byte) 2);
 	  // API_KEY --- INT16, 2bytes, short --- 18
 	  outputBuffer.putShort((short) 18);
-	  // MIN_VERSION --- INT16, 2bytes, short --- '0'
+	  // MIN_VERSION --- INT16, 2bytes, short --- 0
 	  outputBuffer.putShort((short) 0);
-	  // MAX_VERSION --- INT16, 2bytes, short --- '4'
+	  // MAX_VERSION --- INT16, 2bytes, short --- 4
 	  outputBuffer.putShort((short) 4);
-	  // TAGGED_FIELDS --- INT32, 4 bytes, int --- now '0' --- not sure if MAX INT64
+	  // Throttle time --- INT32, 4 bytes --- 0
 	  outputBuffer.putInt(0);
-	  // I have no idea what this is, spacing again?
+	  // TAGGED_FIELDS --- 1 byte --- now 0 'no tagged fields' --- not sure if MAX INT64
 	  outputBuffer.put((byte) 0);
 	
   }
