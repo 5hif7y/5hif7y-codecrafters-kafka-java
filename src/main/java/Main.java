@@ -89,7 +89,7 @@ public class Main {
 	  int response_size = tempBuffer.position();
 	  ByteBuffer OutputBuffer = ByteBuffer.allocate(4 + response_size);
 	  OutputBuffer.putInt(response_size);
-	  OutputBuffer.put(OutputBuffer.array(), 0, response_size);
+	  OutputBuffer.put(tempBuffer.array(), 0, response_size);
 
 	  return OutputBuffer;
   }
