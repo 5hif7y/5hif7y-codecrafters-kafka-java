@@ -133,10 +133,20 @@ public class Main {
 	  } else {
 		  outputBuffer.putShort((short)0);
 	  }
+	  /* Testing if this is not ok
 	  // Response header --- 1 byte --- 2
 	  outputBuffer.put((byte) 2);
 	  // API_KEY --- INT16, 2bytes, short --- 18
 	  outputBuffer.putShort((short) 18);
+	  */
+
+	  // NEW changes
+	  // Num API KEYS --- INT16, 2 bytes, short --- now 1
+	  outputBuffer.putShort((short) 1); // I think this is expected to be 1
+	  // Num API KEYS --- INT16, 2 bytes, short --- 18 now readed from 'request_api_key'
+	  outputBuffer.putShort(ByteBuffer.wrap(request_api_key).getShort());
+	  // END NEW changes
+
 	  // MIN_VERSION --- INT16, 2bytes, short --- 0
 	  outputBuffer.putShort((short) 0);
 	  // MAX_VERSION --- INT16, 2 bytes, short --- 4
