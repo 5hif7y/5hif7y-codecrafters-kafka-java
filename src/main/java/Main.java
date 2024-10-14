@@ -82,7 +82,7 @@ public class Main {
 	  // MAX_VERSION --- INT16, 2bytes, short --- '4'
 	  outputBuffer.putShort((short) 4);
 	  // TAGGED_FIELDS --- INT32, 4 bytes, int --- now '0' --- not sure if MAX INT64
-	  outputBuffer.put((byte) 0);
+	  outputBuffer.putInt(0);
 	
   }
 }
