@@ -23,10 +23,13 @@ public class Main {
        // Wait for connection from client.
        clientSocket = serverSocket.accept();
 
+       // Input/Output streams
+       InputStream in = clientSocket.getInputStream();
+       OutputStream out = clientSocket.getOutputStream();
+
        while(true){ // Loop to handle multiple requests
 	
 	       // Input
-	       InputStream in = clientSocket.getInputStream();
 	       byte[] message_size = in.readNBytes(4); // INT32, 4 bytes
 	       if (message_size.length == 0) break; // ----- break loop conditional -----
 	       byte[] request_api_key = in.readNBytes(2); // INT16, 2 bytes
@@ -38,7 +41,6 @@ public class Main {
 	       byte[] tagged_fields = in.readNBytes(1); // TAGGED_FIELDS
 	
 	       // Output
-	       OutputStream out = clientSocket.getOutputStream();
 	       
 	       ByteBuffer outputBuffer = ByteBuffer.allocate(128);
 	       processOutput(outputBuffer, message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
