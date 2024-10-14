@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Main {
   public static void main(String[] args){
@@ -62,6 +63,16 @@ public class Main {
 				  short client_id_length = ByteBuffer.wrap(in.readNBytes(2)).getShort();
 				  byte[] client_id = client_id_length > 0 ? in.readNBytes(client_id_length) : new byte[0];
 				  byte[] tagged_fields = in.readNBytes(1); // TAGGED_FIELDS;
+				  
+				  // Print input
+				  System.out.println("Received message size: " + ByteBuffer.wrap(message_size).getInt());
+				  System.out.println("Request API Key: " + Arrays.toString(request_api_key));
+				  System.out.println("Request API Version: " + Arrays.toString(request_api_version));
+				  System.out.println("Correlation ID: " + Arrays.toString(correlation_id));
+				  System.out.println("Client ID Length: " + client_id_length);
+				  System.out.println("Client ID byte representation: " + Arrays.toString(client_id));
+				  System.out.println("Client ID String representation: " + new String(client_id));
+				  System.out.println("Tagged Fields: " + Arrays.toString(tagged_fields));
 
 				  // Output
 				  ByteBuffer response = generateResponse(message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
