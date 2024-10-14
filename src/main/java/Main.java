@@ -53,11 +53,11 @@ public class Main {
 			  if (in.available() > 0){
 
 				  // Input
-				  byte[] message_size = in.readNBytes(4); // INT32, 4 bytes
+				  byte[] message_size = readExactly(in, 4); // INT32, 4 bytes
 				  if(message_size.length == 0) break;  // --- break while loop conditional;
-				  byte[] request_api_key = in.readNBytes(2); // INT16, 2 bytes
-				  byte[] request_api_version = in.readNBytes(2); // INT16, 2 bytes
-				  byte[] correlation_id = in.readNBytes(4); //INT32, 4 bytes
+				  byte[] request_api_key = readExactly(in, 2); // INT16, 2 bytes
+				  byte[] request_api_version = readExactly(in, 2); // INT16, 2 bytes
+				  byte[] correlation_id = readExactly(in, 4); //INT32, 4 bytes
 				  // client_id --- Nullable String ---
 				  // Fixed to MAX INT16, 2 bytes, not sure if max INT64, 8 bytes
 				  short client_id_length = ByteBuffer.wrap(in.readNBytes(2)).getShort();
@@ -81,6 +81,7 @@ public class Main {
 			}
 			// test if the client closed the connection to the server
 			if(clientSocket.isClosed() || in.read() == -1){
+				System.out.println("Client disconnected");
 				break;
 			}
 		  }
@@ -89,12 +90,26 @@ public class Main {
 	  }
   }
 
+  private static byte[] readExactly(InputStream in, int numBytes) throws IOException {
+	  byte[] buffer = new byte[numBytes];
+	  int bytesRead = 0;
+	  while(bytesRead < numBytes){
+		  int result = in.read(buffer, bytesRead, numBytes - bytesRead);
+		  if(result == -1){
+			  throw new IOException("Unexpected end of stream");
+		  }
+		  bytesRead += result;
+	  }
+	  return buffer;
+  }
+
 
   private static ByteBuffer generateResponse(byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, byte[] client_id, byte[] tagged_fields){
 
 	  // Temp buffer
 	  ByteBuffer tempBuffer = ByteBuffer.allocate(128);
-	  processOutput(tempBuffer, message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
+	  //processOutput(tempBuffer, message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
+	  processOutput(tempBuffer, message_size, request_api_key, request_api_version, correlation_id);
 
 	  // Estimate total size of the message, but reserving the first 4 bytes
 	  int response_size = tempBuffer.position();
@@ -105,7 +120,8 @@ public class Main {
 	  return OutputBuffer;
   }
 
-  private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, byte[] client_id, byte[] tagged_fields){
+  //private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, byte[] client_id, byte[] tagged_fields){
+  private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id){
 
 	  // Correlation ID --- INT32, 4 bytes, int
 	  outputBuffer.putInt(ByteBuffer.wrap(correlation_id).getInt());
