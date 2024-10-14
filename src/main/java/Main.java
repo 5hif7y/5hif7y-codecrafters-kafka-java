@@ -36,13 +36,11 @@ public class Main {
        OutputStream out = clientSocket.getOutputStream();
        out.write(message_size);
        out.write(correlation_id);
-       out.write(request_api_key);
 
        short version = ByteBuffer.wrap(request_api_version).getShort();
        if(version < 0 || version > 4){
 	       out.write(new byte[] {0, 35});
        }
-       out.write(request_api_version);
 
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
