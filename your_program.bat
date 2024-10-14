@@ -11,7 +11,7 @@ REM Ensure compile steps are run within the repository directory
 cd /d "%~dp0" || exit /b 1
 
 REM Edit this to change how your program compiles locally
-mvn -B package -Ddir=/tmp/codecrafters-build-kafka-java
+call mvn -B package -Ddir=/tmp/codecrafters-build-kafka-java > CON 2>&1
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
 REM Edit this to change how your program runs locally
