@@ -28,7 +28,7 @@ public class Main {
        OutputStream out = clientSocket.getOutputStream();
 
        while(true){ // Loop to handle multiple requests
-	
+	if(in.avaible() > 0) {	
 	       // Input
 	       byte[] message_size = in.readNBytes(4); // INT32, 4 bytes
 	       if (message_size.length == 0) break; // ----- break loop conditional -----
@@ -53,6 +53,7 @@ public class Main {
 	
 	       out.write(finalOutputBuffer.array());
 	       out.flush(); // not sure if this is neccesary
+	}
 	       // test if the client closed the connection to the server
 	       if(clientSocket.isClosed() || in.read() == -1){
 		       break;
