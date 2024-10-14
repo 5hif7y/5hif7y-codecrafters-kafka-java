@@ -83,6 +83,8 @@ public class Main {
 	  outputBuffer.putShort((short) 4);
 	  // TAGGED_FIELDS --- INT32, 4 bytes, int --- now '0' --- not sure if MAX INT64
 	  outputBuffer.putInt(0);
+	  // I have no idea what this is, spacing again?
+	  outputBuffer.put((byte) 0);
 	
   }
 }
