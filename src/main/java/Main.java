@@ -30,6 +30,10 @@ public class Main {
        byte[] correlation_id = in.readNBytes(4); //INT32, 4 bytes
        byte[] client_id; // Nullable String
        byte[] tagged_fields; // TAGGED_FIELDS
+       // 
+       request_api_version[0] = 0;
+       request_api_version[1] = 2;
+
 
        // Output
        OutputStream out = clientSocket.getOutputStream();
