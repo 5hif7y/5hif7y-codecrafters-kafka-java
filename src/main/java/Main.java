@@ -73,6 +73,8 @@ public class Main {
 	  } else {
 		  outputBuffer.putShort((short)0);
 	  }
+	  // I have no idea what this is, spacing?
+	  outputBuffer.put((byte) 2);
 	  // API_KEY --- INT16, 2bytes, short --- 18
 	  outputBuffer.putShort((short) 18);
 	  // MIN_VERSION --- INT16, 2bytes, short --- '0'
