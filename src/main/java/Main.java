@@ -36,12 +36,17 @@ public class Main {
 
        // Output
        OutputStream out = clientSocket.getOutputStream();
-       /*
-       */
+       
        ByteBuffer outputBuffer = ByteBuffer.allocate(128);
-       processOutput(outputBuffer, message_size, correlation_id, request_api_key,
-		       request_api_version, client_id, tagged_fields);
-       out.write(outputBuffer.array(), 0, outputBuffer.position());
+       processOutput(outputBuffer, message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
+
+       // Calc total size of the message, excluding the first 4 bytes
+       int response_size = outputBuffer.position();
+       ByteBuffer finalOutputBuffer = ByteBuffer.allocate(4 + response_size);
+       finalOutputBuffer.putInt(response_size);
+       finalOutputBuffer.put(outputBuffer.array(), 0, response_size);
+
+       out.write(finalOutputBuffer.array());
 
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
@@ -58,21 +63,24 @@ public class Main {
 
   private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, byte[] client_id, byte[] tagged_fields){
 
-
-	  outputBuffer.putInt(ByteBuffer.wrap(message_size).getInt());
-	  outputBuffer.putShort(ByteBuffer.wrap(request_api_key).getShort());
+	  // Correlation ID --- INT32, 4 bytes, int
+	  outputBuffer.put(correlation_id);
+	  // API_VERSION --- INT16, 2 bytes, short
+	  // Error code --- INT16, 2 bytes, short --- 0 means "No Error"
 	  short version = ByteBuffer.wrap(request_api_version).getShort();
 	  if(version < 0 || version > 4){
-		  outputBuffer.putShort(ByteBuffer.wrap(new byte[] {0, 35}).getShort());
+		  outputBuffer.putShort((short)35);
 	  } else {
-		  outputBuffer.putShort(ByteBuffer.wrap(request_api_version).getShort());
+		  outputBuffer.putShort((short)0);
 	  }
-	  outputBuffer.putInt(ByteBuffer.wrap(correlation_id).getInt());
-	  outputBuffer.putShort(ByteBuffer.wrap(client_id).getShort());
-	  outputBuffer.put(tagged_fields[0]);
-
-
-
+	  // API_KEY --- INT16, 2bytes, short --- 18
+	  outputBuffer.putShort((short) 18);
+	  // MIN_VERSION --- INT16, 2bytes, short --- '0'
+	  outputBuffer.putShort((short) 0);
+	  // MAX_VERSION --- INT16, 2bytes, short --- '4'
+	  outputBuffer.putShort((short) 4);
+	  // TAGGED_FIELDS --- INT32, 4 bytes, int --- now '0' --- not sure if MAX INT64
+	  outputBuffer.putInt(0);
 	
   }
 }
