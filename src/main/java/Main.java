@@ -100,12 +100,6 @@ public class Main {
 			  // Process and send responses from circularBuffer
 			  KafkaProtocolUtils.processBufferResponses(messageBuffer, out);
 
-			  /* Removing old RAW data structure
-			  // Output
-			  ByteBuffer response = generateResponse(message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
-			  out.write(response.array());
-			  out.flush(); // not sure if this is neccesary
-			  */
 		}
 	  } catch (IOException e){
 		  System.out.println("IOException while handling client: " + e.getMessage());

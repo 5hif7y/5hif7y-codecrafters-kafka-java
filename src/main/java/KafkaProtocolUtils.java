@@ -63,9 +63,10 @@ public class KafkaProtocolUtils {
 	System.out.println("Received message size: " + ByteBuffer.wrap(message_size).getInt());
 	System.out.println("Request API Key: " + Arrays.toString(request_api_key));
 	System.out.println("Request API Version: " + Arrays.toString(request_api_version));
-	System.out.println("Correlation ID: " + Arrays.toString(correlation_id));
+	System.out.println("Correlation ID byte array representation: " + Arrays.toString(correlation_id));
+	System.out.println("Correlation ID Int32 represetantation: " + byteArrToUInt(correlation_id));
 	System.out.println("Client ID Length: " + client_id_length);
-	System.out.println("Client ID byte representation: " + Arrays.toString(client_id));
+	System.out.println("Client ID byte array representation: " + Arrays.toString(client_id));
 	System.out.println("Client ID String representation: " + new String(client_id));
 	System.out.println("Tagged Fields: " + Arrays.toString(tagged_fields));
   }
@@ -153,4 +154,20 @@ public class KafkaProtocolUtils {
 	  // TAGGED_FIELDS --- INT16, 2 bytes --- now 0 'no tagged fields' --- not sure if MAX INT64
 	  outputBuffer.putShort((short) 0); 
   }
+ public static int byteArrToUInt(byte[] correlation_id){
+
+
+	 int unsignedIntEquivalent = 0;
+
+	 if(correlation_id.length == 4){
+		 unsignedIntEquivalent = ((correlation_id[0] & 0xFF) << 24) |
+		                         ((correlation_id[1] & 0xFF) << 16) |
+		                         ((correlation_id[2] & 0xFF) << 8) |
+		                          (correlation_id[3] & 0xFF);
+	 }
+	 return unsignedIntEquivalent;
+ }
+
+
 }
+
