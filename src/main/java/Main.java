@@ -50,41 +50,39 @@ public class Main {
 
 		  // Loop to behave like a server
 		  while(true){
-			  if (in.available() > 0){
 
-				  // Input
-				  byte[] message_size = readExactly(in, 4); // INT32, 4 bytes
-				  if(message_size.length == 0) break;  // --- break while loop conditional;
-				  byte[] request_api_key = readExactly(in, 2); // INT16, 2 bytes
-				  byte[] request_api_version = readExactly(in, 2); // INT16, 2 bytes
-				  byte[] correlation_id = readExactly(in, 4); //INT32, 4 bytes
-				  // client_id --- Nullable String ---
-				  // Fixed to MAX INT16, 2 bytes, not sure if max INT64, 8 bytes
-				  short client_id_length = ByteBuffer.wrap(in.readNBytes(2)).getShort();
-				  byte[] client_id = client_id_length > 0 ? in.readNBytes(client_id_length) : new byte[0];
-				  byte[] tagged_fields = in.readNBytes(1); // TAGGED_FIELDS;
-				  
-				  // Print input
-				  System.out.println("Received message size: " + ByteBuffer.wrap(message_size).getInt());
-				  System.out.println("Request API Key: " + Arrays.toString(request_api_key));
-				  System.out.println("Request API Version: " + Arrays.toString(request_api_version));
-				  System.out.println("Correlation ID: " + Arrays.toString(correlation_id));
-				  System.out.println("Client ID Length: " + client_id_length);
-				  System.out.println("Client ID byte representation: " + Arrays.toString(client_id));
-				  System.out.println("Client ID String representation: " + new String(client_id));
-				  System.out.println("Tagged Fields: " + Arrays.toString(tagged_fields));
+			  // Input
+			  byte[] message_size = readExactly(in, 4); // INT32, 4 bytes
+			  if(message_size.length == 0) break;  // --- break while loop conditional;
+			  byte[] request_api_key = readExactly(in, 2); // INT16, 2 bytes
+			  byte[] request_api_version = readExactly(in, 2); // INT16, 2 bytes
+			  byte[] correlation_id = readExactly(in, 4); //INT32, 4 bytes
+			  // client_id --- Nullable String ---
+			  // Fixed to MAX INT16, 2 bytes, not sure if max INT64, 8 bytes
+			  short client_id_length = ByteBuffer.wrap(in.readNBytes(2)).getShort();
+			  byte[] client_id = client_id_length > 0 ? in.readNBytes(client_id_length) : new byte[0];
+			  byte[] tagged_fields = in.readNBytes(1); // TAGGED_FIELDS;
+			  
+			  // Print input
+			  System.out.println("Received message size: " + ByteBuffer.wrap(message_size).getInt());
+			  System.out.println("Request API Key: " + Arrays.toString(request_api_key));
+			  System.out.println("Request API Version: " + Arrays.toString(request_api_version));
+			  System.out.println("Correlation ID: " + Arrays.toString(correlation_id));
+			  System.out.println("Client ID Length: " + client_id_length);
+			  System.out.println("Client ID byte representation: " + Arrays.toString(client_id));
+			  System.out.println("Client ID String representation: " + new String(client_id));
+			  System.out.println("Tagged Fields: " + Arrays.toString(tagged_fields));
 
-				  // Output
-				  ByteBuffer response = generateResponse(message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
-				  out.write(response.array());
-				  out.flush(); // not sure if this is neccesary
-			}
-			// test if the client closed the connection to the server
-			if(clientSocket.isClosed() || in.read() == -1){
-				System.out.println("Client disconnected");
-				break;
-			}
-		  }
+			  // Output
+			  ByteBuffer response = generateResponse(message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
+			  out.write(response.array());
+			  out.flush(); // not sure if this is neccesary
+		}
+		// test if the client closed the connection to the server
+		if(clientSocket.isClosed() || in.read() == -1){
+			System.out.println("Client disconnected");
+			break;
+		}
 	  } catch (IOException e){
 		  System.out.println("IOException while handling client: " + e.getMessage());
 	  }
