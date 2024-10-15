@@ -81,7 +81,6 @@ public class Main {
 		// test if the client closed the connection to the server
 		if(clientSocket.isClosed() || in.read() == -1){
 			System.out.println("Client disconnected");
-			break;
 		}
 	  } catch (IOException e){
 		  System.out.println("IOException while handling client: " + e.getMessage());
