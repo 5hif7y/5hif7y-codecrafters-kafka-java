@@ -125,6 +125,11 @@ public class Main {
 	  ErrorCodes errorCode = ErrorCodes.fromApiVersion(version);
 	  return (short)errorCode.getCode();
   }
+  private static short RespondAPIKeyRequest(byte[] request_api_key){
+	  short apiKey = ByteBuffer.wrap(request_api_key).getShort();
+	  APIKeys apiKeyEnum = APIKeys.fromApiKey(apiKey);
+	  return (short)apiKeyEnum.getCode();
+  }
 
   //private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, byte[] client_id, byte[] tagged_fields){
   private static void processOutput(ByteBuffer outputBuffer, byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id){
@@ -133,20 +138,12 @@ public class Main {
 	  outputBuffer.putInt(ByteBuffer.wrap(correlation_id).getInt());
 	  // API_VERSION --- INT16, 2 bytes, short
 	  // Error code --- INT16, 2 bytes, short --- 0 means "No Error"
-	  /* Replaced hardcoded biconditional values
-	  short version = ByteBuffer.wrap(request_api_version).getShort();
-	  if(version < 0 || version > 4){
-		  outputBuffer.putShort((short)35);
-	  } else {
-		  outputBuffer.putShort((short)0);
-	  }
-	  */
 	  outputBuffer.putShort((short)RespondAPIVersionRequest(request_api_version));
 	  // Testing if this is not ok
 	  // Response header --- 1 byte --- 2
 	  outputBuffer.put((byte) 2);
 	  // API_KEY --- INT16, 2bytes, short --- 18
-	  outputBuffer.putShort((short) 18);
+	  outputBuffer.putShort((short)RespondAPIKeyRequest(request_api_key));
 	  
 
 	  // NEW changes // not ok
