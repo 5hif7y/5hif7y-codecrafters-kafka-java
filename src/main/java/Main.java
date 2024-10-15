@@ -5,38 +5,43 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
+
+	private static int PORT = 9092;
+	private static int THREAD_POOL_SIZE = 4;
+	private static int SOCKET_TIMEOUT_MS = 9000; // 9 seconds, 1 second less than test
+
   public static void main(String[] args){
 
     System.err.println("Logs from your program will appear here!");
 
-     ServerSocket serverSocket = null;
-     Socket clientSocket = null;
-     int port = 9092;
-     try {
-	     serverSocket = new ServerSocket(port);
+
+     ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+     try (ServerSocket serverSocket = new ServerSocket(PORT)){
 	     serverSocket.setReuseAddress(true);
-	     System.out.println("Server listening on port " + port);
+	     System.out.println("Server listening on port " + PORT);
 	     
 	     // Wait for connection from client
 	     while(true){
-		     clientSocket = serverSocket.accept();
-		     handleClient(clientSocket);
+		     Socket clientSocket = serverSocket.accept();
+		     clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
+		     executorService.submit(() -> handleClient(clientSocket));
 	     }
 
        } catch (IOException e) {
 	     System.out.println("IOException: " + e.getMessage());
      } finally {
+	     executorService.shutdown();
 	     try {
-		     if (clientSocket != null) {
-			     clientSocket.close();
+		     if(!executorService.awaitTermination(60, TimeUnit.SECONDS)){
+			     executorService.shutdownNow();
 		     }
-		     if (serverSocket != null) {
-			     serverSocket.close();
-		     }
-	     } catch (IOException e) {
-		     System.out.println("IOException: " + e.getMessage());
+	     } catch (InterruptedException ex){
+		     executorService.shutdownNow();
 	     }
      }
   }
@@ -64,23 +69,12 @@ public class Main {
 			  byte[] tagged_fields = in.readNBytes(1); // TAGGED_FIELDS;
 			  
 			  // Print input
-			  System.out.println("Received message size: " + ByteBuffer.wrap(message_size).getInt());
-			  System.out.println("Request API Key: " + Arrays.toString(request_api_key));
-			  System.out.println("Request API Version: " + Arrays.toString(request_api_version));
-			  System.out.println("Correlation ID: " + Arrays.toString(correlation_id));
-			  System.out.println("Client ID Length: " + client_id_length);
-			  System.out.println("Client ID byte representation: " + Arrays.toString(client_id));
-			  System.out.println("Client ID String representation: " + new String(client_id));
-			  System.out.println("Tagged Fields: " + Arrays.toString(tagged_fields));
+			  logRequest(message_size, request_api_key, request_api_version, correlation_id, client_id_length, client_id, tagged_fields);
 
 			  // Output
 			  ByteBuffer response = generateResponse(message_size, request_api_key, request_api_version, correlation_id, client_id, tagged_fields);
 			  out.write(response.array());
 			  out.flush(); // not sure if this is neccesary
-		}
-		// test if the client closed the connection to the server
-		if(clientSocket.isClosed() || in.read() == -1){
-			System.out.println("Client disconnected");
 		}
 	  } catch (IOException e){
 		  System.out.println("IOException while handling client: " + e.getMessage());
@@ -98,6 +92,18 @@ public class Main {
 		  bytesRead += result;
 	  }
 	  return buffer;
+  }
+
+  private static void logRequest(byte[] message_size, byte[] request_api_key, byte[] request_api_version, byte[] correlation_id, short client_id_length, byte[] client_id, byte[] tagged_fields) {
+
+	System.out.println("Received message size: " + ByteBuffer.wrap(message_size).getInt());
+	System.out.println("Request API Key: " + Arrays.toString(request_api_key));
+	System.out.println("Request API Version: " + Arrays.toString(request_api_version));
+	System.out.println("Correlation ID: " + Arrays.toString(correlation_id));
+	System.out.println("Client ID Length: " + client_id_length);
+	System.out.println("Client ID byte representation: " + Arrays.toString(client_id));
+	System.out.println("Client ID String representation: " + new String(client_id));
+	System.out.println("Tagged Fields: " + Arrays.toString(tagged_fields));
   }
 
 
