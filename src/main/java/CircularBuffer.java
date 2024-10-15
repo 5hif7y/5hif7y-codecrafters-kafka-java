@@ -1,7 +1,7 @@
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class CircularBuffer {
+public class CircularBuffer {
 
 	private byte[][] buffer;
 	private int size;
