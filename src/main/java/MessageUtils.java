@@ -72,10 +72,10 @@ public class MessageUtils {
             .put((byte) 0) // TAG BUFFER
 	
             // DescribeTopicPartitions
-            .putShort((short)key.getCode()) // 2nd KEY
-            .putShort((short) 0) // Min Version Description
-            .putShort((short) 0) // Max Version Description
-            .put((byte) 0) // TAG BUFFER
+            //.putShort((short)key.getCode()) // 2nd KEY
+            //.putShort((short) 0) // Min Version Description
+            //.putShort((short) 0) // Max Version Description
+            //.put((byte) 0) // TAG BUFFER
 	
             // END
             //.put((byte) 0) // TAG BUFFER
