@@ -62,7 +62,7 @@ public class MessageUtils {
 	// Error code 0 (no error)
         if (version >= 0 && version <= 4) {
             message.putShort((short) 0); // No error
-            message.put((byte) 2) // compat arrays
+            message.put((byte) 3) // compat arrays i think this is (NUMApiKeys - 1)
 				  
 
             // APIVersions
@@ -71,11 +71,11 @@ public class MessageUtils {
             .putShort((short) 4) // Max version
             .put((byte) 0) // TAG BUFFER
 	
-            // DescribeTopicPartitions
-            //.putShort((short)key.getCode()) // 2nd KEY
-            //.putShort((short) 0) // Min Version Description
-            //.putShort((short) 0) // Max Version Description
-            //.put((byte) 0) // TAG BUFFER
+            // Second Key array - testing with compat arrays = 3 = (NUMApiKeys - 1)
+            .putShort((short)key.getCode()) // 2nd KEY
+            .putShort((short) 0) // Min Version Description
+            .putShort((short) 0) // Max Version Description
+            .put((byte) 0) // TAG BUFFER
 	
             // END
             //.put((byte) 0) // TAG BUFFER
