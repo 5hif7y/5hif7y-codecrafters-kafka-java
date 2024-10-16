@@ -62,23 +62,22 @@ public class MessageUtils {
 	// Error code 0 (no error)
         if (version >= 0 && version <= 4) {
             message.putShort((short) 0); // No error
-            message.put((byte) 3) // compat arrays i think this is (NUMApiKeys - 1)
+            message.put((byte) 3) // compat arrays = (NUMApiKeys - 1) = now 2 arrays
 				  
 
-            // APIVersions
+            // First Key byte array - APIVersions
             .putShort((short)key.getCode()) // 1st KEY
 	    .putShort((short) 0) // Min version
             .putShort((short) 4) // Max version
             .put((byte) 0) // TAG BUFFER
 	
-            // Second Key array - testing with compat arrays = 3 = (NUMApiKeys - 1)
-            .putShort((short)key.getCode()) // 2nd KEY
+            // Second Key byte array - DESCRIBE_TOPIC_PARTITIONS
+            .putShort((short)key.DESCRIBE_TOPIC_PARTITIONS.getCode())
             .putShort((short) 0) // Min Version Description
             .putShort((short) 0) // Max Version Description
             .put((byte) 0) // TAG BUFFER
 	
             // END
-            //.put((byte) 0) // TAG BUFFER
             .putInt((int) 0) // throttle_time_ms
             .put((byte) 0); // TAG BUFFER
 	    ;
