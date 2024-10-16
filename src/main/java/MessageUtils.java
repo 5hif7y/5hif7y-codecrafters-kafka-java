@@ -67,18 +67,20 @@ public class MessageUtils {
 
             // APIVersions
             .putShort((short)key.getCode()) // 1st KEY
-	    .putShort((short) 3) // Min version
+	    .putShort((short) 0) // Min version
             .putShort((short) 4) // Max version
+            .put((byte) 0) // TAG BUFFER
 	
             // DescribeTopicPartitions
             .putShort((short)key.getCode()) // 2nd KEY
-            .putShort((short) 0) // Min Version
-            .putShort((short) 0) // Max Version
+            .putShort((short) 0) // Min Version Description
+            .putShort((short) 0) // Max Version Description
+            .put((byte) 0) // TAG BUFFER
 	
             // END
-            .put((byte) 0) // TAG BUFFER
-            .putInt(0) // throttle_time_ms
-            .put((byte) 0); // TAG BUFFER
+            //.put((byte) 0) // TAG BUFFER
+            .putInt((int) 0) // throttle_time_ms
+            //.put((byte) 0); // TAG BUFFER
 	    
         } else {
             message.putShort((short) 35); // Unsupported version error code
