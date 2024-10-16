@@ -80,7 +80,7 @@ public class MessageUtils {
             // END
             //.put((byte) 0) // TAG BUFFER
             .putInt((int) 0) // throttle_time_ms
-            //.put((byte) 0); // TAG BUFFER
+            .put((byte) 0); // TAG BUFFER
 	    ;
 	    
         } else {
