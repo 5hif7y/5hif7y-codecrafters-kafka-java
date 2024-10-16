@@ -58,16 +58,28 @@ public class MessageUtils {
     public static ByteBuffer createApiVersionsResponse(int version, int correlationId, APIKeys key) {
         ByteBuffer message = ByteBuffer.allocate(1024).order(ByteOrder.BIG_ENDIAN);
         message.putInt(correlationId);
+
+	// Error code 0 (no error)
         if (version >= 0 && version <= 4) {
             message.putShort((short) 0); // No error
             message.put((byte) 2) // compat arrays
-                    //.putShort(RequestKey.API_VERSIONS.type)
-                    .putShort((short)key.getCode())
-                    .putShort((short) 3) // Min version
-                    .putShort((short) 4) // Max version
-                    .put((byte) 0) // TAG BUFFER
-                    .putInt(0) // throttle_time_ms
-                    .put((byte) 0); // TAG BUFFER
+				  
+
+            // APIVersions
+            .putShort((short)key.getCode()) // 1st KEY
+	    .putShort((short) 3) // Min version
+            .putShort((short) 4) // Max version
+	
+            // DescribeTopicPartitions
+            .putShort((short)key.getCode()) // 2nd KEY
+            .putShort((short) 0) // Min Version
+            .putShort((short) 0) // Max Version
+	
+            // END
+            .put((byte) 0) // TAG BUFFER
+            .putInt(0) // throttle_time_ms
+            .put((byte) 0); // TAG BUFFER
+	    
         } else {
             message.putShort((short) 35); // Unsupported version error code
         }

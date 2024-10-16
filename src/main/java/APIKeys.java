@@ -18,6 +18,8 @@ public enum APIKeys {
     LIST_GROUPS(16, "ListGroups request"),
     SASL_HANDSHAKE(17, "SaslHandshake request"),
     API_VERSIONS(18, "ApiVersions request");
+    // Add the rest
+    DESCRIBE_TOPIC_PARTITIONS(75, "DescribeTopicPartitions request");
 
     private final int code;
     private final String description;
