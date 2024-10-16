@@ -81,6 +81,7 @@ public class MessageUtils {
             //.put((byte) 0) // TAG BUFFER
             .putInt((int) 0) // throttle_time_ms
             //.put((byte) 0); // TAG BUFFER
+	    ;
 	    
         } else {
             message.putShort((short) 35); // Unsupported version error code
