@@ -17,7 +17,7 @@ public enum APIKeys {
     DESCRIBE_GROUPS(15, "DescribeGroups request"),
     LIST_GROUPS(16, "ListGroups request"),
     SASL_HANDSHAKE(17, "SaslHandshake request"),
-    API_VERSIONS(18, "ApiVersions request");
+    API_VERSIONS(18, "ApiVersions request"),
     CREATE_TOPICS(19, "CreateTopics request"),
     DELETE_TOPICS(20, "DeleteTopics request"),
     DELETE_RECORDS(21, "DeleteRecords request"),
