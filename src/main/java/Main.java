@@ -91,12 +91,21 @@ public class Main {
 			byte[] message = MessageUtils.readMessage(reader, messageLength);
 			if(message != null){
 
+				// Extract CorrelationID from received message
+				int expectedCorrelationID = MessageUtils.extractCorrelationID(message);
+
 				// Add the message to the circular buffer
 				messageBuffer.add(message);
+
 				// Process the message from the circular buffer
 				byte[] bufferedMessage = messageBuffer.get();
-				if(bufferedMessage != null){
+				if(bufferedMessage != null &&
+				   MessageUtils.validateMessage(bufferedMessage, expectedCorrelationID)){
+					System.err.println("Valid CorrelationID, processing message.");
 					MessageUtils.processMessage(writer, bufferedMessage);
+				} else {
+					System.err.println("Invalid CorrelationID, discarding message.");
+
 				}
 			}
 		}

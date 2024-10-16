@@ -107,6 +107,17 @@ public class MessageUtils {
         ByteBuffer buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
         return buffer;
     }
+
+    public static boolean validateMessage(byte[] message, int expectedCorrelationID){
+	    int correlationID = extractCorrelationID(message);
+	    return correlationID == expectedCorrelationID;
+    }
+    public static int extractCorrelationID(byte[] message){
+	    ByteBuffer buffer = ByteBuffer.wrap(message);
+	    buffer.order(ByteOrder.BIG_ENDIAN);
+	    int correlationID = buffer.getInt(4); // After MessageSize
+	    return correlationID;
+    }
 }
 
 
