@@ -107,12 +107,12 @@ public class Main {
 					MessageUtils.processMessage(writer, bufferedMessage);
 
 					// Send response to client
-					String responseMessage = "Hi";
-					byte[] responseBytes = responseMessage.getBytes();
-					writer.write(responseBytes);
-					writer.flush();
+					//String responseMessage = "Hi";
+					//byte[] responseBytes = responseMessage.getBytes();
+					//writer.write(responseBytes);
+					//writer.flush();
 					// Deserialize responseMessage to view correctly
-					System.out.println("Response sent to client: " + responseMessage);
+					//System.out.println("Response sent to client: " + responseMessage);
 
 
 				} else {

@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.Arrays;
 
 public class MessageUtils {
 
@@ -47,14 +48,37 @@ public class MessageUtils {
 		UUID topicUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 		//responseBuffer = handleTopicPartitionsRequest(correlationId, topicName, topicUUID);
 		responseBuffer = ByteBuffer.wrap(handleTopicPartitionsRequest(correlationId, topicName, topicUUID));
+
+		//ByteBuffer responseBuffer = ByteBuffer.wrap(handleTopicPartitionsRequest(correlationId, topicName, topicUUID));
+		if (responseBuffer == null) {
+		    System.out.println("Error: responseBuffer is null.");
+		} else {
+		    System.out.println("Response buffer allocated, size: " + responseBuffer.capacity());
+		}
+
+
 		break;
             // Handle other cases (PRODUCE, FETCH, HEARTBEAT)
+	    default:
+		System.out.println("Unknown API Key: " + key);
+		// implement send error message to client
+		//responseBuffer = createErrorResponse(correlationId, "Unknown API Key");
         }
 
-        if (responseBuffer != null) {
-            writer.write(data(responseBuffer));
-            writer.flush();
-        }
+	try{
+	        if (responseBuffer != null) {
+		    	System.out.println("Response contents: " + Arrays.toString(data(responseBuffer)));
+            		writer.write(data(responseBuffer));
+          	  	writer.flush();
+			System.out.println("Response sent successfully.");
+		} else {
+			System.out.println("Response buffer is null, nothing to send.");
+		}
+
+	} catch (IOException e) {
+		System.out.println("Error writing response: " + e.getMessage());
+		e.printStackTrace();
+	}
     }
 
  public  static ByteBuffer handleApiVersions(int version, int correlationId, APIKeys key) {
