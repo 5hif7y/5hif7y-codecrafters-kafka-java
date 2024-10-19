@@ -3,7 +3,8 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class MessageUtils {
 
@@ -41,6 +42,12 @@ public class MessageUtils {
             case APIKeys.API_VERSIONS:
                 responseBuffer = handleApiVersions(version, correlationId, key);
                 break;
+	    case APIKeys.DESCRIBE_TOPIC_PARTITIONS:
+		String topicName = extractTopicName(buffer);
+		UUID topicUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+		//responseBuffer = handleTopicPartitionsRequest(correlationId, topicName, topicUUID);
+		responseBuffer = ByteBuffer.wrap(handleTopicPartitionsRequest(correlationId, topicName, topicUUID));
+		break;
             // Handle other cases (PRODUCE, FETCH, HEARTBEAT)
         }
 
@@ -118,6 +125,72 @@ public class MessageUtils {
 	    int correlationID = buffer.getInt(4); // After MessageSize
 	    return correlationID;
     }
+    public static String extractTopicName(ByteBuffer buffer) {
+	    /*
+	    // Skip positions:
+	    buffer.position(buffer.position() + 4); // Skip MessageSize (4 bytes)
+	    buffer.position(buffer.position() + 4); // Skip CorrelationID (4 bytes)
+	    buffer.position(buffer.position() + 1); // Skip TAG_BUFFER (1 byte)
+	    buffer.position(buffer.position() + 4); // Skip THROTTLE_TIME (4 bytes)
+	    buffer.position(buffer.position() + 1); // Skip ARRAY_LENGTH (1 byte)
+	    buffer.position(buffer.position() + 2); // Skip ERROR_CODE (2 bytes)
+	    */
+	    buffer.position(16); // TopicName StringLength exact position
+	
+	    // Read TopicName Length (1 byte)
+	    int topicNameLength = Byte.toUnsignedInt(buffer.get());
+	
+	    // Read TopicName with extracted topicNameLength:
+	    byte[] topicNameBytes = new byte[topicNameLength];
+	    buffer.get(topicNameBytes);
+	
+	    // Convertir los bytes a un String:
+	    return new String(topicNameBytes, StandardCharsets.UTF_8);
+    }
+    
+    public static byte[] uuidToByteArray(UUID uuid){
+    	byte[] byteArray = new byte[16];
+	long mostSigBits = uuid.getMostSignificantBits();
+	long leastSigBits = uuid.getLeastSignificantBits();
+
+	for(int i = 0; i < 8; i++){
+		byteArray[i] =   (byte)((mostSigBits  >> (8*(7-i))) & 0xFF);
+		byteArray[8+i] = (byte)((leastSigBits >> (8*(7-i))) & 0xFF);
+	}
+
+	return byteArray;
+    }
+
+
+    public static byte[] handleTopicPartitionsRequest(int correlationID, String topicName, UUID topicUUID){
+	    ByteBuffer generatedResponse = ByteBuffer.allocate(1024).order(ByteOrder.BIG_ENDIAN);
+
+	    // 1 Save one Int space for messageSize, now undeclared 
+	    generatedResponse.putInt(0);
+	    // 2 Write the rest
+	    generatedResponse.putInt(correlationID);
+	    generatedResponse.put((byte) 0 ); // Header TAG_BUFFER
+	    generatedResponse.putInt(0); // Thottle Time
+	    generatedResponse.put((byte) 2); // Array Length : N + 1 = 1
+	    generatedResponse.putShort((short) 3); // Error Code
+	    generatedResponse.put((byte) (topicName.length() + 1)); // TopicNameLength : N+1
+	    generatedResponse.put(topicName.getBytes(StandardCharsets.UTF_8)); // TopicName
+	    generatedResponse.put(uuidToByteArray(topicUUID)); // TopicID - 16bytes UUID
+	    generatedResponse.put((byte) 0); // IsInternal - byte boolean
+	    generatedResponse.put((byte) 1); // Partitions Array - COMPACT_ARRAY - N+1=0
+	    generatedResponse.putInt(3576); // TopicAuthorizedOperations : 4bytes BitField
+	    generatedResponse.put((byte) 0); // Topics TAG_BUFFER
+	    generatedResponse.put((byte) 0xFF); // Cursor
+	    generatedResponse.put((byte) 0); // Final TAG_BUFFER
+
+	    // 3 calculate MessageSize value and rewrite the first 4 bytes with it
+	    int messageSize = generatedResponse.position() - 4;
+	    generatedResponse.putInt(0, messageSize);
+	    
+	    return generatedResponse.array();
+	    //return generatedResponse;
+    }
+
 }
 
 
