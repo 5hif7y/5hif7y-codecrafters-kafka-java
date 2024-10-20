@@ -322,7 +322,8 @@ public class MessageUtils {
 	    message.put((byte) 0 ); // Header TAG_BUFFER
 	    message.putInt(0); // Thottle Time
 	    message.put((byte) 2); // Array Length : N + 1 = 1
-	    message.putShort((short) 3); // Error Code
+	    //message.putShort((short) 3); // Error Code - UNKNOWN_TOPIC add TopicsErrorsEnum
+	    message.putShort((short) 0); // Error Code - None add TopicsErrorsEnum
 	    message.put((byte) (topicName.length() + 1)); // TopicNameLength : N+1
 	    message.put(topicName.getBytes(StandardCharsets.UTF_8)); // TopicName
 	    message.put(uuidToByteArray(topicUUID)); // TopicID - 16bytes UUID
