@@ -108,7 +108,7 @@ public class MessageUtils {
 		System.out.println("Array length: " + arrayLength);
 		byte topicNameLength = buffer.get();
 		System.out.println("TopicName length: " + topicNameLength);
-		String topicName = getString(buffer, topicNameLength);
+		String topicName = getString(buffer, (topicNameLength - 1));
 		System.out.println("TopicName: " + topicName);
 		UUID topicUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 		responseBuffer = handleTopicPartitionsRequest(correlationId, topicName, topicUUID);
